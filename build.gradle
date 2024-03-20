@@ -71,6 +71,9 @@ bootJar {
 compileJava.dependsOn(tasks.openApiGenerate)
 
 openApiGenerate {
+    importMappings.put("Pageable", "org.springframework.data.domain.Pageable")
+    importMappings.put("Sort", "org.springframework.data.domain.Sort")
+
     generatorName = "spring"
     inputSpec = "$rootDir/src/main/resources/static/API.yml".toString()
     outputDir = "$rootDir/src/main/java".toString()

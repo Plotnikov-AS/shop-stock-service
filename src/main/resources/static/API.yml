@@ -41,7 +41,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductsResponse'
+                $ref: '#/components/schemas/PagedProductsResponse'
   /v1/type:
     post:
       tags:

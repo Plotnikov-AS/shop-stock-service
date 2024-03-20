@@ -3,6 +3,7 @@ package ru.mai.shop.stock.service;
 import org.springframework.data.domain.Pageable;
 import ru.mai.shop.stock.generated.dto.AddProductTypeRequest;
 import ru.mai.shop.stock.generated.dto.FillProductsRequest;
+import ru.mai.shop.stock.generated.dto.PagedProductsResponse;
 import ru.mai.shop.stock.generated.dto.ProductTypesResponse;
 import ru.mai.shop.stock.generated.dto.ProductsResponse;
 
@@ -32,5 +33,5 @@ public interface StockService {
      *
      * @return страница товаров
      */
-    ProductsResponse getAll(Pageable pageable);
+    PagedProductsResponse getAll(Pageable pageable);
 }

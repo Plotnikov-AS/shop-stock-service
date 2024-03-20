@@ -4,7 +4,8 @@ create table if not exists products
     type  uuid    not null references product_type on delete restrict,
     price numeric not null,
     count bigint default 0,
-    place text    not null
+    place text    not null,
+    unique (type, price)
 );
 
 comment on table products is 'Товары';

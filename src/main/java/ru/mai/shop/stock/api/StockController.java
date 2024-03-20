@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.mai.shop.stock.generated.api.StockApi;
 import ru.mai.shop.stock.generated.dto.AddProductTypeRequest;
 import ru.mai.shop.stock.generated.dto.FillProductsRequest;
+import ru.mai.shop.stock.generated.dto.PagedProductsResponse;
 import ru.mai.shop.stock.generated.dto.ProductTypesResponse;
 import ru.mai.shop.stock.generated.dto.ProductsResponse;
 import ru.mai.shop.stock.service.StockService;
@@ -27,7 +28,7 @@ public class StockController implements StockApi {
     }
 
     @Override
-    public ResponseEntity<ProductsResponse> getAll(Pageable pageable) {
+    public ResponseEntity<PagedProductsResponse> getAll(Pageable pageable) {
         return ResponseEntity.ok(stockService.getAll(pageable));
     }
 }

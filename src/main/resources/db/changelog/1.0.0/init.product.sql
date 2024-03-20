@@ -1,7 +1,7 @@
 create table if not exists products
 (
     id    uuid primary key,
-    type  text    not null,
+    type  uuid    not null references product_type on delete restrict,
     price numeric not null,
     count bigint default 0,
     place text    not null

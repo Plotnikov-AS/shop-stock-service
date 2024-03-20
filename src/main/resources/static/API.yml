@@ -30,6 +30,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProductsResponse'
     get:
+      x-spring-paginated: true
       tags:
         - Stock
       summary: Получить список товаров
@@ -77,6 +78,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductTypeDto'
+    PagedProductsResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDto'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        totalElements:
+          type: integer
+          format: int64
+        last:
+          type: boolean
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+        sort:
+          $ref: '#/components/schemas/Sort'
+        numberOfElements:
+          type: integer
+        first:
+          type: boolean
+        empty:
+          type: boolean
     ProductsResponse:
       type: object
       properties:
@@ -117,5 +146,28 @@ components:
           format: uuid
         name:
           type: string
-
+    Pageable:
+      type: object
+      properties:
+        sort:
+          $ref: '#/components/schemas/Sort'
+        offset:
+          type: integer
+        pageSize:
+          type: integer
+        pageNumber:
+          type: integer
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+    Sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
 

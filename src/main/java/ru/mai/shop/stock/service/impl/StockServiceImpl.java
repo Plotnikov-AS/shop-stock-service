@@ -1,6 +1,7 @@
 package ru.mai.shop.stock.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,9 @@ import ru.mai.shop.stock.repo.ProductsRepo;
 import ru.mai.shop.stock.service.StockService;
 
 import java.util.List;
+import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
@@ -35,6 +38,7 @@ public class StockServiceImpl implements StockService {
                 .map(productType -> mapper.map(productType, ProductType.class))
                 .filter(productType -> !productTypesRepo.existsByName(productType.getName()))
                 .map(productTypesRepo::save)
+                .peek(saved -> log.info("Добавлен новый тип товара: {}", saved.getName()))
                 .map(savedType -> mapper.map(savedType, ProductTypeDto.class))
                 .toList();
 
@@ -48,14 +52,13 @@ public class StockServiceImpl implements StockService {
         List<ProductDto> savedProducts = request.getProducts().stream()
                 .map(productDto -> {
                     String typeName = productDto.getType().getName();
-                    if (productTypesRepo.existsByName(typeName)) {
-                        return productsRepo.findByTypeAndPrice(typeName, productDto.getPrice())
-                                .map(existingProduct -> updateProduct(existingProduct, productDto, typeName))
-                                .orElseGet(() -> productsRepo.save(mapper.map(productDto, Product.class)));
-                    } else {
-                        throw new IllegalArgumentException("Невозможно добавить товар с несуществующим типом %s"
-                                .formatted(typeName));
-                    }
+                    Product product = productTypesRepo.findByName(typeName)
+                            .map(type -> productsRepo.findByTypeAndPrice(type, productDto.getPrice())
+                                    .map(existingProduct -> updateProduct(existingProduct, productDto, typeName))
+                                    .orElseGet(() -> createNewProduct(productDto, type)))
+                            .orElseThrow(() -> new IllegalArgumentException("Невозможно добавить товар с несуществующим типом %s"
+                                    .formatted(typeName)));
+                    return productsRepo.save(product);
                 })
                 .map(product -> mapper.map(product, ProductDto.class))
                 .toList();
@@ -69,8 +72,24 @@ public class StockServiceImpl implements StockService {
             throw new IllegalArgumentException("Невозможно уменьшить количество товара %s"
                     .formatted(typeName));
         }
-        return productsRepo.save(existingProduct
+        Product updated = productsRepo.save(existingProduct
                 .setCount(Long.valueOf(productDto.getCount())));
+        log.info("Обновлён товар {}, количество: {}",
+                updated.getType().getName(), updated.getCount());
+
+        return updated;
+    }
+
+    private Product createNewProduct(ProductDto productDto, ProductType type) {
+        Product newProduct = new Product()
+                .setCount(Long.valueOf(productDto.getCount()))
+                .setPrice(productDto.getPrice())
+                .setPlace(productDto.getPlace())
+                .setType(type);
+        log.info("Добавлен новый товар {}, количество {}",
+                newProduct.getType().getName(), newProduct.getCount());
+
+        return newProduct;
     }
 
     @Override
@@ -91,5 +110,31 @@ public class StockServiceImpl implements StockService {
                 .sort(productsPage.getSort())
                 .totalElements(productsPage.getTotalElements())
                 .totalPages(productsPage.getTotalPages());
+    }
+
+    @Override
+    @Transactional
+    public void decrementProducts(Set<ProductDto> products) {
+        products.forEach(saledProduct -> productsRepo.findById(saledProduct.getId())
+                .map(product -> {
+                    Long currentCount = product.getCount();
+                    Integer countToDecrement = saledProduct.getCount();
+                    if (countToDecrement > currentCount) {
+                        throw new IllegalArgumentException("Товара %s недостаточно".formatted(product.getType().getName()));
+                    }
+                    return product.setCount(currentCount - countToDecrement);
+                })
+                .map(productsRepo::save));
+    }
+
+    @Override
+    @Transactional
+    public void incrementProducts(Set<ProductDto> products) {
+        products.forEach(refundedProduct -> productsRepo.findById(refundedProduct.getId())
+                .map(product -> {
+                    Long currentCount = product.getCount();
+                    return product.setCount(currentCount + refundedProduct.getCount());
+                })
+                .map(productsRepo::save));
     }
 }

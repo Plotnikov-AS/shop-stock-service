@@ -1,5 +1,7 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/shop
+    url: jdbc:postgresql://localhost:5433/shop_db
     username: local
     password: local
+  kafka:
+    bootstrap-servers: http://localhost:29092

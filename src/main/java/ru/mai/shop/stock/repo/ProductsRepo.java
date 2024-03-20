@@ -13,11 +13,5 @@ public interface ProductsRepo extends JpaRepository<Product, UUID> {
 
     boolean existsByType(ProductType type);
 
-    @Query(value = """
-            select p.* from products p
-                join product_type type on type.id = p.type
-            where type.name = :name
-                and p.price = :price
-            """, nativeQuery = true)
-    Optional<Product> findByTypeAndPrice(String name, BigDecimal price);
+    Optional<Product> findByTypeAndPrice(ProductType type, BigDecimal price);
 }

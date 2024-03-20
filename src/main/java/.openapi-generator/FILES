@@ -1,0 +1,11 @@
+.openapi-generator-ignore
+README.md
+pom.xml
+ru/mai/shop/generated/api/ApiUtil.java
+ru/mai/shop/generated/api/StockApi.java
+ru/mai/shop/generated/dto/AddProductTypeRequest.java
+ru/mai/shop/generated/dto/FillProductsRequest.java
+ru/mai/shop/generated/dto/ProductDto.java
+ru/mai/shop/generated/dto/ProductTypeDto.java
+ru/mai/shop/generated/dto/ProductTypesResponse.java
+ru/mai/shop/generated/dto/ProductsResponse.java

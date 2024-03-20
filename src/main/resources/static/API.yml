@@ -1,0 +1,121 @@
+openapi: 3.0.3
+info:
+  title: Shop Stock Service
+  description: Склад
+  version: v0.0.1
+servers:
+  - url: http://localhost:8080/shop/stock/api/
+    description: LOCAL
+tags:
+  - name: Stock
+    description: Склад
+paths:
+  /v1/products:
+    post:
+      tags:
+        - Stock
+      summary: Пополнить склад
+      operationId: fillProducts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FillProductsRequest'
+      responses:
+        '200':
+          description: Список товаров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsResponse'
+    get:
+      tags:
+        - Stock
+      summary: Получить список товаров
+      operationId: getAll
+      responses:
+        '200':
+          description: Список товаров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsResponse'
+  /v1/type:
+    post:
+      tags:
+        - Stock
+      summary: Добавить тип товара
+      operationId: addProductType
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProductTypeRequest'
+      responses:
+        '200':
+          description: Список добавленных типов товаров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductTypesResponse'
+
+components:
+  schemas:
+    FillProductsRequest:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDto'
+    AddProductTypeRequest:
+      type: object
+      properties:
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductTypeDto'
+    ProductsResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDto'
+    ProductTypesResponse:
+      type: object
+      properties:
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductTypeDto'
+    ProductDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/ProductTypeDto'
+        price:
+          type: number
+          description: Цена товара за единицу
+        count:
+          type: integer
+          description: Количество товара
+        place:
+          type: string
+          description: Место хранения
+    ProductTypeDto:
+      type: object
+      description: Тип продукта
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+

@@ -124,7 +124,12 @@ public class StockServiceImpl implements StockService {
                     }
                     return product.setCount(currentCount - countToDecrement);
                 })
-                .map(productsRepo::save));
+                .map(product -> {
+                    Product saved = productsRepo.save(product);
+                    log.info("Уменьшено количество товара {} на {}",
+                            saved.getType().getName(), product.getCount());
+                    return saved;
+                }));
     }
 
     @Override
@@ -135,6 +140,11 @@ public class StockServiceImpl implements StockService {
                     Long currentCount = product.getCount();
                     return product.setCount(currentCount + refundedProduct.getCount());
                 })
-                .map(productsRepo::save));
+                .map(product -> {
+                    Product saved = productsRepo.save(product);
+                    log.info("Увеличено количество товара {} на {}",
+                            saved.getType().getName(), product.getCount());
+                    return saved;
+                }));
     }
 }

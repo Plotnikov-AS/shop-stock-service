@@ -4,7 +4,7 @@ info:
   description: Склад
   version: v0.0.1
 servers:
-  - url: http://localhost:8080/shop/stock/api/
+  - url: http://localhost:8082/shop/stock/api/
     description: LOCAL
 tags:
   - name: Stock
